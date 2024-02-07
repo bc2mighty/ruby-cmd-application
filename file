@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'json'
+require './models/comment.rb'
+require './models/post.rb'
+include Post
+include Comment
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: greet.rb [options]"
+
+  opts.on('-n', '--name NAME', 'Your name') do |name|
+    options[:name] = name
+  end
+
+  opts.on('-save-file', '--save-file Save-File', 'Do you want to save file') do |save_file|
+    options[:save_file] = save_file
+  end
+end.parse!
+
+# p options.has_key?(:save_file)
+
+# comments = JSON.parse(Comment.get).map {|obj| obj.transform_keys(&:to_sym)}
+# posts = JSON.parse(Post.get).map {|obj| obj.transform_keys(&:to_sym)}
+
+# posts = posts.map do |post|
+#     post_comments = comments.select { |comment| comment[:postId] == post[:id] }
+#     post.merge({:comments => post_comments})
+# end
+# puts posts[0]
+comments = JSON.parse(Comment.get).map{|obj| obj.values }
+# comments = JSON.parse(Comment.get).map{|obj| obj.transform_keys(&:to_sym) }
+
+headers = ['postId', 'id', 'name', 'email', 'body']
+filename = 'comments.csv'
+
+Comment.save_file(headers, comments, filename)
+
+# puts Post.get
